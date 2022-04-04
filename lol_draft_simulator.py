@@ -10,7 +10,7 @@ __author__ = 'Jesse Estes'
 __copyright__ = 'Copyright 2022, LolDraftSimulator'
 __credits__ = ['Jesse Estes']
 __license__ = 'MIT'
-__version__ = '1.0.0'
+__version__ = '1.0.1'
 __maintainer__ = 'Jesse Estes'
 __email__ = 'jestes5111@gmail.com'
 __status__ = 'Prototype'
@@ -42,12 +42,10 @@ def classify_picks_bans(data: np.array, phase: str) -> None:
     # Determine what phase is being classified
     target = data[phase]
 
-    # Create Encoders and fit them to the data
+    # Use Encoders to make the data readable by the Neural Network
     data_encoder = OrdinalEncoder().fit(data)
-    target_encoder = LabelEncoder().fit(target)
-
-    # Transform the data to make it readable by the Neural Network
     encoded_data = data_encoder.transform(data)
+    target_encoder = LabelEncoder().fit(target)
     encoded_target = target_encoder.transform(target)
 
     # Split 80% of the data into training data and 20% into testing data
@@ -71,21 +69,18 @@ def classify_picks_bans(data: np.array, phase: str) -> None:
     # Remove duplicates
     predictions = list(set(predictions))
 
-    # Check if the selected champion has already been selected
+    # Check if the selected champion was previously selected
     for selection in predictions:
-        # Grab a random champion from the predictions
+        # Select a random champion
         selection = np.random.choice(predictions, 1)
 
         # Check if the champion was selected
         if selection in selected_champions:
-            # If the champion has been selected, remove it from the list
-            # and select another champion
+            # Select another champion
             predictions.remove(selection)
         else:
-            # If the champion has not been selected, select it
+            # Select the given champion and exit the loop
             selected_champions.append(str(selection[0]))
-
-            # Exit the loop since the selection has been made
             break
 
 def simulate_draft(data: np.array) -> None:
@@ -129,10 +124,7 @@ def print_draft(selections: list) -> None:
     Args:
         selections: List of champion selections
     """
-    # Inform the user that the simulation
-    print('\nDraft simulation finished! Results:\n')
-
-    # List everything out
+    # Show the results of the draft
     print('Ban phase one - each team takes turns banning champions')
     print('\tBlue Ban 1:\t', selections[0])
     print('\tRed Ban 1:\t', selections[1])
@@ -174,6 +166,8 @@ if __name__ == '__main__':
     # Simulate the draft
     simulate_draft(picks_bans)
 
-    # Inform the user that the draft is done and print the results
-    # in an easy-to-read format
+    # Inform the user that the simulation is finished
+    print('\nDraft simulation finished! Results:\n')
+
+    # Print the results of the draft
     print_draft(selected_champions)
