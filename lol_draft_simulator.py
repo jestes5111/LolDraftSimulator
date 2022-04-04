@@ -17,7 +17,7 @@ from sklearn.model_selection import train_test_split
 # --------------------------------------------------------------------------- #
 def classify_picks_bans(data, phase):
     """Train a classifier to determine what champions are picked and banned.
-    
+
     Args:
         phase (string): The given phase of the draft (ex: 'Blue Ban 1').
     """
