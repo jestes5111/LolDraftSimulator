@@ -27,7 +27,7 @@ from sklearn.neural_network import MLPClassifier
 from sklearn.preprocessing import OrdinalEncoder, LabelEncoder
 from sklearn.model_selection import train_test_split
 
-# Local libraries
+# Owned libraries
 
 # --------------------------------------------------------------------------- #
 #                                    Code                                     #

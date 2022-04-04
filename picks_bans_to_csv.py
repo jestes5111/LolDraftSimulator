@@ -16,9 +16,14 @@ __status__ = 'Prototype'
 # --------------------------------------------------------------------------- #
 #                                  Imports                                    #
 # --------------------------------------------------------------------------- #
+# Standard libraries
+
+# Third-party libraries
 import leaguepedia_parser
 import lol_id_tools as lit
 import pandas as pd
+
+# Owned libraries
 
 # --------------------------------------------------------------------------- #
 #                                    Code                                     #
