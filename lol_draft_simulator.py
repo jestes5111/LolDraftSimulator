@@ -1,5 +1,5 @@
 #!/usr/bin/env python
-"""lol_draft_simulator.py: Use Neural Networks to simulate a 
+"""lol_draft_simulator.py: Use Neural Networks to simulate a
    League of Legends draft.
 """
 
