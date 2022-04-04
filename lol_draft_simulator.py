@@ -42,15 +42,18 @@ def classify_picks_bans(data: np.array, phase: str) -> None:
     # Determine what phase is being classified
     target = data[phase]
 
+    # Create a modified copy of the DataFrame excluding the current phase
+    features = data.drop(phase, axis=1)
+
     # Use Encoders to make the data readable by the Neural Network
-    data_encoder = OrdinalEncoder().fit(data)
-    encoded_data = data_encoder.transform(data)
+    features_encoder = OrdinalEncoder().fit(features)
+    encoded_features = features_encoder.transform(features)
     target_encoder = LabelEncoder().fit(target)
     encoded_target = target_encoder.transform(target)
 
-    # Split 80% of the data into training data and 20% into testing data
+    # Split 80% of the features into training features and 20% into testing features
     features_train, features_test, labels_train, labels_test = train_test_split(
-        encoded_data, encoded_target, test_size = 0.2
+        encoded_features, encoded_target, test_size = 0.2
     )
 
     # Remove the unused 'labels_test' variable
@@ -63,7 +66,7 @@ def classify_picks_bans(data: np.array, phase: str) -> None:
     # Determine the champion selected in the given phase (i.e., picked or banned)
     predictions = classifier.predict(features_test)
 
-    # Un-encode the data (i.e., revert it to champion name)
+    # Un-encode the features (i.e., revert it to champion name)
     predictions = target_encoder.inverse_transform(predictions)
 
     # Remove duplicates

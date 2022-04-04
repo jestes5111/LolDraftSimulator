@@ -1,5 +1,17 @@
-#!/usr/bin/env python
-"""picks_bans_to_csv.py: Scrape Leaguepedia to create a csv file of data."""
+#!/usr/bin/env python3
+# -*- coding: utf-8 -*-
+
+"""Scrape Leaguepedia for picks and bans and create a CSV file with the data."""
+
+__file__ = 'picks_bans_to_csv.py'
+__author__ = 'Jesse Estes'
+__copyright__ = 'Copyright 2022, LolDraftSimulator'
+__credits__ = ['Jesse Estes']
+__license__ = 'MIT'
+__version__ = '1.0.1'
+__maintainer__ = 'Jesse Estes'
+__email__ = 'jestes5111@gmail.com'
+__status__ = 'Prototype'
 
 # --------------------------------------------------------------------------- #
 #                                  Imports                                    #
