@@ -32,7 +32,7 @@ from sklearn.model_selection import train_test_split
 # --------------------------------------------------------------------------- #
 #                                    Code                                     #
 # --------------------------------------------------------------------------- #
-def classify_picks_bans(data: np.array, phase: str) -> None:
+def classify_picks_bans(data: pd.DataFrame, phase: str) -> None:
     """Use a Neural Network to classify champions selected in the given phase.
 
     Args:
@@ -86,7 +86,7 @@ def classify_picks_bans(data: np.array, phase: str) -> None:
             selected_champions.append(str(selection[0]))
             break
 
-def simulate_draft(data: np.array) -> None:
+def simulate_draft(data: pd.DataFrame) -> None:
     """Simulate the picks and bans.
 
     Args:
