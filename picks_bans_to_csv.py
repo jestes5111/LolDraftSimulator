@@ -30,26 +30,26 @@ import pandas as pd
 # --------------------------------------------------------------------------- #
 # Initialize a dictionary to store data
 draft_dict = {
-    'Blue Ban 1': [],
-    'Red Ban 1': [],
-    'Blue Ban 2': [],
-    'Red Ban 2': [],
-    'Blue Ban 3': [],
-    'Red Ban 3': [],
-    'Blue Pick 1': [],
-    'Red Pick 1': [],
-    'Red Pick 2': [],
-    'Blue Pick 2': [],
-    'Blue Pick 3': [],
-    'Red Pick 3': [],
-    'Red Ban 4': [],
-    'Blue Ban 4': [],
-    'Red Ban 5': [],
-    'Blue Ban 5': [],
-    'Red Pick 4': [],
-    'Blue Pick 4': [],
-    'Blue Pick 5': [],
-    'Red Pick 5': []
+  'Blue Ban 1': [],
+  'Red Ban 1': [],
+  'Blue Ban 2': [],
+  'Red Ban 2': [],
+  'Blue Ban 3': [],
+  'Red Ban 3': [],
+  'Blue Pick 1': [],
+  'Red Pick 1': [],
+  'Red Pick 2': [],
+  'Blue Pick 2': [],
+  'Blue Pick 3': [],
+  'Red Pick 3': [],
+  'Red Ban 4': [],
+  'Blue Ban 4': [],
+  'Red Ban 5': [],
+  'Blue Ban 5': [],
+  'Red Pick 4': [],
+  'Blue Pick 4': [],
+  'Blue Pick 5': [],
+  'Red Pick 5': [],
 }
 
 # Create a list of names of regions
@@ -57,14 +57,14 @@ region_names = ['China', 'Europe', 'Korea', 'North America']
 
 # Create a list of the names of tournaments
 tournament_names = [
-    'LPL/2021 Season/Spring Season',
-    'LPL/2021 Season/Summer Season',
-    'LEC/2021 Season/Spring Season',
-    'LEC/2021 Season/Summer Season',
-    'LCK/2021 Season/Spring Season',
-    'LCK/2021 Season/Summer Season',
-    'LCS/2021 Season/Spring Season',
-    'LCS/2021 Season/Summer Season'
+  'LPL/2021 Season/Spring Season',
+  'LPL/2021 Season/Summer Season',
+  'LEC/2021 Season/Spring Season',
+  'LEC/2021 Season/Summer Season',
+  'LCK/2021 Season/Spring Season',
+  'LCK/2021 Season/Summer Season',
+  'LCS/2021 Season/Spring Season',
+  'LCS/2021 Season/Summer Season',
 ]
 
 # Get the reigons
@@ -72,72 +72,72 @@ regions = leaguepedia_parser.get_regions()
 
 # Loop through the list of region names
 for region_name in region_names:
-    # Get tournaments from the 2021 season of the specified region
-    tournaments = leaguepedia_parser.get_tournaments(region_name, year=2021)
+  # Get tournaments from the 2021 season of the specified region
+  tournaments = leaguepedia_parser.get_tournaments(region_name, year=2021)
 
 # Loop through the list of tournament names
 for tournament_name in tournament_names:
-    # Get all games from the specified tournament
-    games = leaguepedia_parser.get_games(tournament_name)
+  # Get all games from the specified tournament
+  games = leaguepedia_parser.get_games(tournament_name)
 
-    # Loop through all the games from the specified list
-    for game in games:
-        # Get the details of the current game
-        current_game = leaguepedia_parser.get_game_details(game)
+  # Loop through all the games from the specified list
+  for game in games:
+    # Get the details of the current game
+    current_game = leaguepedia_parser.get_game_details(game)
 
-        # Save the picks and bans of the current game
-        picks_bans = current_game.picksBans
+    # Save the picks and bans of the current game
+    picks_bans = current_game.picksBans
 
-        # Save the teams playing in the current gamee
-        teams = current_game.teams
+    # Save the teams playing in the current gamee
+    teams = current_game.teams
 
-        # Set up pick/ban counters for each team
-        count_blue_ban = 0
-        count_red_ban = 0
-        count_blue_pick = 0
-        count_red_pick = 0
+    # Set up pick/ban counters for each team
+    count_blue_ban = 0
+    count_red_ban = 0
+    count_blue_pick = 0
+    count_red_pick = 0
 
-        # Loop through all picks and bans
-        for champion in picks_bans:
-            # Check if the champion was picked or banned
-            if champion.isBan:
-                # Check what team banned the champion
-                if champion.team == 'BLUE' and count_blue_ban < 5:
-                    # Increment the counter
-                    count_blue_ban += 1
+    # Loop through all picks and bans
+    for champion in picks_bans:
+      # Check if the champion was picked or banned
+      if champion.isBan:
+        # Check what team banned the champion
+        if champion.team == 'BLUE' and count_blue_ban < 5:
+          # Increment the counter
+          count_blue_ban += 1
 
-                    # Create a string to use as the dictionary index
-                    result = 'Blue Ban ' + str(count_blue_ban)
-                elif count_red_ban < 5:
-                    # Increment the counter
-                    count_red_ban += 1
+          # Create a string to use as the dictionary index
+          result = 'Blue Ban ' + str(count_blue_ban)
+        elif count_red_ban < 5:
+          # Increment the counter
+          count_red_ban += 1
 
-                    # Create a string to use as the dictionary index
-                    result = 'Red Ban ' + str(count_red_ban)
+          # Create a string to use as the dictionary index
+          result = 'Red Ban ' + str(count_red_ban)
 
-                # Store the draft data in the dictionary
-                draft_dict[result].append(
-                    lit.get_name(champion.championId, object_type='champion')
-                )
-            else:
-                # Check what team picked the champion
-                if champion.team == 'BLUE' and count_blue_pick < 5:
-                    # Increment the counter
-                    count_blue_pick += 1
+        # Store the draft data in the dictionary
+        draft_dict[result].append(
+          lit.get_name(champion.championId, object_type='champion')
+        )
+      else:
+        # Check what team picked the champion
+        if champion.team == 'BLUE' and count_blue_pick < 5:
+          # Increment the counter
+          count_blue_pick += 1
 
-                    # Create a string to use as the dictionary index
-                    result = 'Blue Pick ' + str(count_blue_pick)
-                elif count_red_pick < 5:
-                    # Increment the counter
-                    count_red_pick += 1
+          # Create a string to use as the dictionary index
+          result = 'Blue Pick ' + str(count_blue_pick)
+        elif count_red_pick < 5:
+          # Increment the counter
+          count_red_pick += 1
 
-                    # Create a string to use as the dictionary index
-                    result = 'Red Pick ' + str(count_red_pick)
+          # Create a string to use as the dictionary index
+          result = 'Red Pick ' + str(count_red_pick)
 
-                # Store the draft data in the dictionary
-                draft_dict[result].append(
-                    lit.get_name(champion.championId, object_type='champion')
-                )
+        # Store the draft data in the dictionary
+        draft_dict[result].append(
+          lit.get_name(champion.championId, object_type='champion')
+        )
 
 # Create a DataFrame using the dictionary
 data = pd.DataFrame(draft_dict)
