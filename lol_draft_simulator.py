@@ -54,7 +54,7 @@ def classify_picks_bans(data: pd.DataFrame,
   target_encoder = LabelEncoder().fit(target)
   encoded_target = target_encoder.transform(target)
 
-  # Split 80% of the features into training and 20% into testing 
+  # Split 80% of the features into training and 20% into testing
   features_train, features_test, labels_train, labels_test = train_test_split(
     encoded_features, encoded_target, test_size = 0.2
   )
@@ -89,41 +89,6 @@ def classify_picks_bans(data: pd.DataFrame,
       # selection[0] is used because selection is type list
       selections.append(str(selection[0]))
       break
-
-def simulate_draft(data: pd.DataFrame, selections: list) -> None:
-  """Simulate the picks and bans.
-
-  Args:
-      data: Champion selections and their selection phases
-  """
-  # Classify the picks and bans of every phase
-  # Ban phase one - each team takes turns banning champions
-  classify_picks_bans(data, 'Blue Ban 1', selections)
-  classify_picks_bans(data, 'Red Ban 1', selections)
-  classify_picks_bans(data, 'Blue Ban 2', selections)
-  classify_picks_bans(data, 'Red Ban 2', selections)
-  classify_picks_bans(data, 'Blue Ban 3', selections)
-  classify_picks_bans(data, 'Red Ban 3', selections)
-
-  # Pick phase one - each team picks three champions, snake-style
-  classify_picks_bans(data, 'Blue Pick 1', selections)
-  classify_picks_bans(data, 'Red Pick 1', selections)
-  classify_picks_bans(data, 'Red Pick 2', selections)
-  classify_picks_bans(data, 'Blue Pick 2', selections)
-  classify_picks_bans(data, 'Blue Pick 3', selections)
-  classify_picks_bans(data, 'Red Pick 3', selections)
-
-  # Ban phase two - each team takes turns banning champions
-  classify_picks_bans(data, 'Red Ban 4', selections)
-  classify_picks_bans(data, 'Blue Ban 4', selections)
-  classify_picks_bans(data, 'Red Ban 5', selections)
-  classify_picks_bans(data, 'Blue Ban 5', selections)
-
-  # Pick phase two - each team picks two champions, snake-style
-  classify_picks_bans(data, 'Red Pick 4', selections)
-  classify_picks_bans(data, 'Blue Pick 4', selections)
-  classify_picks_bans(data, 'Blue Pick 5', selections)
-  classify_picks_bans(data, 'Red Pick 5', selections)
 
 def print_draft(selections: list) -> None:
   """Print the results of the draft in an easy-to-read format.
@@ -167,9 +132,10 @@ if __name__ == '__main__':
   # Create a list to add selected champions to
   selected_champions = []
 
-  # Start the draft
+  # Simulate the draft
   print('Simulating draft. Please wait, this could take a few minutes.')
-  simulate_draft(picks_bans, selected_champions)
+  for draft_phase in picks_bans.columns:
+    classify_picks_bans(picks_bans, draft_phase, selected_champions)
 
   # Show the results
   print('\nDraft simulation finished! Results:\n')
