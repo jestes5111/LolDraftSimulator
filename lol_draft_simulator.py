@@ -66,7 +66,7 @@ def classify_picks_bans(data: np.array, phase: str) -> None:
     # Determine the champion selected in the given phase (i.e., picked or banned)
     predictions = classifier.predict(features_test)
 
-    # Un-encode the features (i.e., revert it to champion name)
+    # Un-encode the features (i.e., revert to champion name)
     predictions = target_encoder.inverse_transform(predictions)
 
     # Remove duplicates
