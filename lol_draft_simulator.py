@@ -1,9 +1,7 @@
 #!/usr/bin/env python3
 # -*- coding: utf-8 -*-
 
-"""lol_draft_simulator.py: Use Neural Networks to simulate a
-   League of Legends draft.
-"""
+"""Use Neural Networks to simulate a League of Legends draft."""
 
 __file__ = 'lol_draft_simulator.py'
 __author__ = 'Jesse Estes'
