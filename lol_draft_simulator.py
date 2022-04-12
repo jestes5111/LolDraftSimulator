@@ -83,8 +83,7 @@ def classify_picks_bans(data: pd.DataFrame,
       # Select another champion
       predictions.remove(selection)
     else:
-      # Select the given champion and exit the loop.
-      # selection[0] is used because selection is type list
+      # Get the given champion's name, select them, and exit the loop
       selections.append(str(selection[0]))
       break
 
