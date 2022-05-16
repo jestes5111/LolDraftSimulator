@@ -30,9 +30,10 @@ from sklearn.model_selection import train_test_split
 # --------------------------------------------------------------------------- #
 #                                    Code                                     #
 # --------------------------------------------------------------------------- #
-def classify_picks_bans(data: pd.DataFrame,
-                        phase: str,
-                        selections: list
+def classify_picks_bans(
+    data: pd.DataFrame,
+    phase: str,
+    selections: list
 ) -> None:
   """Use a Neural Network to classify champions selected in the given phase.
 
@@ -54,7 +55,7 @@ def classify_picks_bans(data: pd.DataFrame,
 
   # Split 80% of the features into training and 20% into testing
   features_train, features_test, labels_train, labels_test = train_test_split(
-    encoded_features, encoded_target, test_size = 0.2
+    encoded_features, encoded_target, test_size=0.2
   )
 
   # Remove the unused 'labels_test' variable
@@ -87,41 +88,6 @@ def classify_picks_bans(data: pd.DataFrame,
       selections.append(str(selection[0]))
       break
 
-def print_draft(selections: list) -> None:
-  """Print the results of the draft in an easy-to-read format.
-
-  Args:
-      selections: List of champion selections
-  """
-  # Show the results of the draft
-  print('Ban phase one - each team takes turns banning champions')
-  print('\tBlue Ban 1:\t', selections[0])
-  print('\tRed Ban 1:\t', selections[1])
-  print('\tBlue Ban 2:\t', selections[2])
-  print('\tRed Ban 2:\t', selections[3])
-  print('\tBlue Ban 3:\t', selections[4])
-  print('\tRed Ban 3:\t', selections[5])
-
-  print('\nPick phase one - each team picks three champions, snake-style')
-  print('\tBlue Pick 1:\t', selections[6])
-  print('\tRed Pick 1:\t', selections[7])
-  print('\tRed Pick 2:\t', selections[8])
-  print('\tBlue Pick 2:\t', selections[9])
-  print('\tBlue Pick 3:\t', selections[10])
-  print('\tRed Pick 3:\t', selections[11])
-
-  print('\nBan phase two - each team takes turns banning champions')
-  print('\tRed Ban 4:\t', selections[12])
-  print('\tBlue Ban 4:\t', selections[13])
-  print('\tRed Ban 5:\t', selections[14])
-  print('\tBlue Ban 5:\t', selections[15])
-
-  print('\nPick phase two - each team picks two champions, snake-style')
-  print('\tRed Pick 4:\t', selections[16])
-  print('\tBlue Pick 4:\t', selections[17])
-  print('\tBlue Pick 5:\t', selections[18])
-  print('\tRed Pick 5:\t', selections[19])
-
 if __name__ == '__main__':
   # Read in the data
   picks_bans = pd.read_csv('picks_bans_2021.csv').fillna(method='ffill')
@@ -129,11 +95,21 @@ if __name__ == '__main__':
   # Create a list to add selected champions to
   selected_champions = []
 
+  # Create a counter to show what selection is being looked at
+  selection_counter = 0
+
   # Simulate the draft
-  print('Simulating draft. Please wait, this could take a few minutes.')
+  print('Beginning draft simulation.')
   for draft_phase in picks_bans.columns:
     classify_picks_bans(picks_bans, draft_phase, selected_champions)
 
-  # Show the results
-  print('\nDraft simulation finished! Results:\n')
-  print_draft(selected_champions)
+    # Print a blank line for formatting
+    if draft_phase in ['Blue Ban 1', 'Blue Pick 1', 'Red Ban 4', 'Red Pick 4']:
+      print()
+    
+    # Print the selection and look at the next selection
+    print('\t'+ draft_phase + ':\t', selected_champions[selection_counter])
+    selection_counter += 1
+
+  # End of program
+  print('\nDraft simulation finished!')
