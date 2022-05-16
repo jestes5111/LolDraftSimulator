@@ -33,8 +33,7 @@ from sklearn.model_selection import train_test_split
 def main():
   """Read the data to be used and run all necessary commands."""
   # Read in the data and fill missing values
-  picks_bans = pd.read_csv('picks_bans_2021.csv')
-  picks_bans.fillna(method='ffill')
+  picks_bans = pd.read_csv('picks_bans_2021.csv').fillna(method='ffill')
 
   # Create a list to add selected champions to
   selected_champions = []
@@ -47,7 +46,7 @@ def main():
   for draft_phase in picks_bans.columns:
     classify_picks_bans(picks_bans, draft_phase, selected_champions)
 
-    # Print a blank line for formatting
+    # Print a blank line in certain spots for formatting
     if draft_phase in ['Blue Ban 1', 'Blue Pick 1', 'Red Ban 4', 'Red Pick 4']:
       print()
 
@@ -94,28 +93,18 @@ def classify_picks_bans(
   classifier = MLPClassifier(max_iter=1500)
   classifier.fit(features_train, labels_train)
 
-  # Determine the champion selected in the given phase (i.e., picked or banned)
+  # Determine the champion selected (picked or banned) in the given phase
   predictions = classifier.predict(features_test)
 
   # Un-encode the predictions (i.e., revert to champion name)
   predictions = target_encoder.inverse_transform(predictions)
 
-  # Remove duplicates
-  predictions = list(set(predictions))
+  # Remove duplicates and previously selected champions
+  predictions = list(set(predictions) - set(selections))
 
-  # Check if the selected champion was previously selected
-  for selection in predictions:
-    # Select a random champion
-    selection = np.random.choice(predictions, 1)
-
-    # Check if the champion was selected
-    if selection in selections:
-      # Select another champion
-      predictions.remove(selection)
-    else:
-      # Get the given champion's name, select them, and exit the loop
-      selections.append(str(selection[0]))
-      break
+  # Choose a random champion
+  selection = np.random.choice(predictions, 1)
+  selections.append(str(selection[0]))
 
 if __name__ == '__main__':
   main()
