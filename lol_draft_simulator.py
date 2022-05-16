@@ -30,6 +30,34 @@ from sklearn.model_selection import train_test_split
 # --------------------------------------------------------------------------- #
 #                                    Code                                     #
 # --------------------------------------------------------------------------- #
+def main():
+  """Read the data to be used and run all necessary commands."""
+  # Read in the data and fill missing values
+  picks_bans = pd.read_csv('picks_bans_2021.csv')
+  picks_bans.fillna(method='ffill')
+
+  # Create a list to add selected champions to
+  selected_champions = []
+
+  # Create a counter to show what selection is being looked at
+  selection_counter = 0
+
+  # Simulate the draft
+  print('Beginning draft simulation.')
+  for draft_phase in picks_bans.columns:
+    classify_picks_bans(picks_bans, draft_phase, selected_champions)
+
+    # Print a blank line for formatting
+    if draft_phase in ['Blue Ban 1', 'Blue Pick 1', 'Red Ban 4', 'Red Pick 4']:
+      print()
+
+    # Print the selection and look at the next selection
+    print('\t'+ draft_phase + ':\t', selected_champions[selection_counter])
+    selection_counter += 1
+
+  # End of program
+  print('\nDraft simulation finished!')
+
 def classify_picks_bans(
     data: pd.DataFrame,
     phase: str,
@@ -40,6 +68,7 @@ def classify_picks_bans(
   Args:
       data: Champion selections and their selection phases
       phase: Draft phase that the champion was selected in
+      selections: List of champions that have been selected
   """
   # Determine what phase is being classified
   target = data[phase]
@@ -68,7 +97,7 @@ def classify_picks_bans(
   # Determine the champion selected in the given phase (i.e., picked or banned)
   predictions = classifier.predict(features_test)
 
-  # Un-encode the features (i.e., revert it to champion name)
+  # Un-encode the predictions (i.e., revert to champion name)
   predictions = target_encoder.inverse_transform(predictions)
 
   # Remove duplicates
@@ -89,27 +118,4 @@ def classify_picks_bans(
       break
 
 if __name__ == '__main__':
-  # Read in the data
-  picks_bans = pd.read_csv('picks_bans_2021.csv').fillna(method='ffill')
-
-  # Create a list to add selected champions to
-  selected_champions = []
-
-  # Create a counter to show what selection is being looked at
-  selection_counter = 0
-
-  # Simulate the draft
-  print('Beginning draft simulation.')
-  for draft_phase in picks_bans.columns:
-    classify_picks_bans(picks_bans, draft_phase, selected_champions)
-
-    # Print a blank line for formatting
-    if draft_phase in ['Blue Ban 1', 'Blue Pick 1', 'Red Ban 4', 'Red Pick 4']:
-      print()
-    
-    # Print the selection and look at the next selection
-    print('\t'+ draft_phase + ':\t', selected_champions[selection_counter])
-    selection_counter += 1
-
-  # End of program
-  print('\nDraft simulation finished!')
+  main()
