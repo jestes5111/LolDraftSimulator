@@ -8,7 +8,7 @@ __author__ = 'Jesse Estes'
 __copyright__ = 'Copyright 2022, LolDraftSimulator'
 __credits__ = ['Jesse Estes']
 __license__ = 'MIT'
-__version__ = '1.0.1'
+__version__ = '1.0.2'
 __maintainer__ = 'Jesse Estes'
 __email__ = 'jestes5111@gmail.com'
 __status__ = 'Prototype'
@@ -44,7 +44,7 @@ def main():
   # Simulate the draft
   print('Beginning draft simulation.')
   for draft_phase in picks_bans.columns:
-    classify_picks_bans(picks_bans, draft_phase, selected_champions)
+    select_champions(picks_bans, draft_phase, selected_champions)
 
     # Print a blank line in certain spots for formatting
     if draft_phase in ['Blue Ban 1', 'Blue Pick 1', 'Red Ban 4', 'Red Pick 4']:
@@ -57,12 +57,12 @@ def main():
   # End of program
   print('\nDraft simulation finished!')
 
-def classify_picks_bans(
+def select_champions(
     data: pd.DataFrame,
     phase: str,
     selections: list
 ) -> None:
-  """Use a Neural Network to classify champions selected in the given phase.
+  """Use Neural Networks to classify champions selected in the given phase.
 
   Args:
       data: Champion selections and their selection phases
@@ -102,7 +102,7 @@ def classify_picks_bans(
   # Remove duplicates and previously selected champions
   predictions = list(set(predictions) - set(selections))
 
-  # Choose a random champion
+  # Choose a random champion and add them to the list of selected champions
   selection = np.random.choice(predictions, 1)
   selections.append(str(selection[0]))
 
