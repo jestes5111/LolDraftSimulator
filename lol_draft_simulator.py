@@ -22,7 +22,7 @@ __status__ = 'Prototype'
 import pandas as pd
 import numpy as np
 from sklearn.neural_network import MLPClassifier
-from sklearn.preprocessing import OrdinalEncoder, LabelEncoder
+from sklearn.preprocessing import OrdinalEncoder, LabelEncoder, StandardScaler
 from sklearn.model_selection import train_test_split
 
 # Owned libraries
@@ -77,14 +77,22 @@ def select_champions(
 
   # Use Encoders to make the data readable by the Neural Network
   features_encoder = OrdinalEncoder().fit(features)
-  encoded_features = features_encoder.transform(features)
+  features = features_encoder.transform(features)
   target_encoder = LabelEncoder().fit(target)
-  encoded_target = target_encoder.transform(target)
+  target = target_encoder.transform(target)
 
   # Split 80% of the features into training and 20% into testing
   features_train, features_test, labels_train, labels_test = train_test_split(
-    encoded_features, encoded_target, test_size=0.2
+    features, target, test_size=0.2
   )
+
+  # Create and train a StandardScaler
+  scaler = StandardScaler()
+  scaler.fit(features_train)
+
+  # Scale the data
+  features_train = scaler.transform(features_train)
+  features_test = scaler.transform(features_test)
 
   # Remove the unused 'labels_test' variable
   del labels_test
