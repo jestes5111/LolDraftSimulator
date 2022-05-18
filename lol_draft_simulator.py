@@ -31,9 +31,9 @@ from sklearn.model_selection import train_test_split
 #                                    Code                                     #
 # --------------------------------------------------------------------------- #
 def main():
-  """Read the data to be used and run all necessary commands."""
+  """Read the data to be used and call necessary functions."""
   # Read in the data and fill missing values
-  picks_bans = pd.read_csv('picks_bans_2021.csv').fillna(method='ffill')
+  selection_data = pd.read_csv('picks_bans_2021.csv').fillna(method='ffill')
 
   # Create a list to add selected champions to
   selected_champions = []
@@ -43,8 +43,8 @@ def main():
 
   # Simulate the draft
   print('Beginning draft simulation.')
-  for draft_phase in picks_bans.columns:
-    select_champions(picks_bans, draft_phase, selected_champions)
+  for draft_phase in selection_data.columns:
+    select_champions(selection_data, draft_phase, selected_champions)
 
     # Print a blank line in certain spots for formatting
     if draft_phase in ['Blue Ban 1', 'Blue Pick 1', 'Red Ban 4', 'Red Pick 4']:
@@ -55,7 +55,7 @@ def main():
     selection_counter += 1
 
   # End of program
-  print('\nDraft simulation finished!')
+  print('\nDraft simulation finished!\n')
 
 def select_champions(
     data: pd.DataFrame,
@@ -96,7 +96,7 @@ def select_champions(
   # Determine the champion selected (picked or banned) in the given phase
   predictions = classifier.predict(features_test)
 
-  # Un-encode the predictions (i.e., revert to champion name)
+  # Un-encode the potential selections (i.e., revert to champion name)
   predictions = target_encoder.inverse_transform(predictions)
 
   # Remove duplicates and previously selected champions
