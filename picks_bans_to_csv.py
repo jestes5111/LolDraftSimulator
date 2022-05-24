@@ -17,6 +17,7 @@ __status__ = 'Prototype'
 #                                  Imports                                    #
 # --------------------------------------------------------------------------- #
 # Standard libraries
+import sys
 
 # Third-party libraries
 import leaguepedia_parser
@@ -52,19 +53,22 @@ draft_dict = {
   'Red Pick 5': [],
 }
 
+# Read command line arguments to get the desired year
+desired_year = sys.argv[1]
+
 # Create a list of names of regions
 region_names = ['China', 'Europe', 'Korea', 'North America']
 
 # Create a list of the names of tournaments
 tournament_names = [
-  'LPL/2021 Season/Spring Season',
-  'LPL/2021 Season/Summer Season',
-  'LEC/2021 Season/Spring Season',
-  'LEC/2021 Season/Summer Season',
-  'LCK/2021 Season/Spring Season',
-  'LCK/2021 Season/Summer Season',
-  'LCS/2021 Season/Spring Season',
-  'LCS/2021 Season/Summer Season',
+  'LPL/' + str(desired_year) + ' Season/Spring Season',
+  'LPL/' + str(desired_year) + ' Season/Summer Season',
+  'LEC/' + str(desired_year) + ' Season/Spring Season',
+  'LEC/' + str(desired_year) + ' Season/Summer Season',
+  'LCK/' + str(desired_year) + ' Season/Spring Season',
+  'LCK/' + str(desired_year) + ' Season/Summer Season',
+  'LCS/' + str(desired_year) + ' Season/Spring Season',
+  'LCS/' + str(desired_year) + ' Season/Summer Season',
 ]
 
 # Get the reigons
@@ -73,7 +77,7 @@ regions = leaguepedia_parser.get_regions()
 # Loop through the list of region names
 for region_name in region_names:
   # Get tournaments from the 2021 season of the specified region
-  tournaments = leaguepedia_parser.get_tournaments(region_name, year=2021)
+  tournaments = leaguepedia_parser.get_tournaments(region_name, year=int(desired_year))
 
 # Loop through the list of tournament names
 for tournament_name in tournament_names:
@@ -146,4 +150,4 @@ data = pd.DataFrame(draft_dict)
 data = data.sample(frac=1)
 
 # Send the DataFrame to a csv file for reading
-data.to_csv('picks_bans_2021.csv', index=False)
+data.to_csv('picks_bans_' + str(desired_year) + '.csv', index=False)
