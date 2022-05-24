@@ -31,7 +31,7 @@ from sklearn.model_selection import train_test_split
 #                                    Code                                     #
 # --------------------------------------------------------------------------- #
 def main():
-  """Read the data to be used and call necessary functions."""
+  """Read the data to be used and simulate the draft."""
   # Read in the data and fill missing values
   selection_data = pd.read_csv('picks_bans_2021.csv').fillna(method='ffill')
 
@@ -72,7 +72,7 @@ def select_champions(
   # Determine what phase is being classified
   target = data[phase]
 
-  # Create a modified copy of the DataFrame excluding the current phase
+  # Create a modified copy of the DataFrame that excludes the current phase
   features = data.drop(phase, axis=1)
 
   # Use Encoders to make the data readable by the Neural Network
@@ -94,7 +94,7 @@ def select_champions(
   features_train = scaler.transform(features_train)
   features_test = scaler.transform(features_test)
 
-  # Remove the unused 'labels_test' variable
+  # Remove unused variable
   del labels_test
 
   # Create and train a Neural Network classifier
