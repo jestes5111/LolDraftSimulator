@@ -30,7 +30,7 @@ from sklearn.model_selection import train_test_split
 # --------------------------------------------------------------------------- #
 #                                    Code                                     #
 # --------------------------------------------------------------------------- #
-def main():
+def main() -> None:
   """Read the data to be used and simulate the draft."""
   # Read in the data and fill missing values
   selection_data = pd.read_csv('picks_bans_2021.csv').fillna(method='ffill')

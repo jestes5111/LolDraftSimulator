@@ -53,95 +53,111 @@ draft_dict = {
   'Red Pick 5': [],
 }
 
-# Read command line arguments to get the desired year
-desired_year = sys.argv[1]
+# Read command line arguments to get the desired region(s) and year(s) as lists
+regions = sys.argv[1].split(',')
+years = sys.argv[2].split(',')
 
-# Create a list of names of regions
-region_names = ['China', 'Europe', 'Korea', 'North America']
+# Convert values to int
+years = list(map(int, years))
 
-# Create a list of the names of tournaments
-tournament_names = [
-  'LPL/' + str(desired_year) + ' Season/Spring Season',
-  'LPL/' + str(desired_year) + ' Season/Summer Season',
-  'LEC/' + str(desired_year) + ' Season/Spring Season',
-  'LEC/' + str(desired_year) + ' Season/Summer Season',
-  'LCK/' + str(desired_year) + ' Season/Spring Season',
-  'LCK/' + str(desired_year) + ' Season/Summer Season',
-  'LCS/' + str(desired_year) + ' Season/Spring Season',
-  'LCS/' + str(desired_year) + ' Season/Summer Season',
-]
+# Create a list of tournament names and populate based on selections
+tournament_names = []
+for year in years:
+  if 'China' in regions:
+    tournament_names.append('LPL/' + str(year) + ' Season/Spring Season')
+    tournament_names.append('LPL/' + str(year) + ' Season/Summer Season')
 
-# Get the reigons
-regions = leaguepedia_parser.get_regions()
+  if 'Korea' in regions:
+    tournament_names.append('LCK/' + str(year) + ' Season/Spring Season')
+    tournament_names.append('LCK/' + str(year) + ' Season/Summer Season')
 
-# Loop through the list of region names
-for region_name in region_names:
-  # Get tournaments from the 2021 season of the specified region
-  tournaments = leaguepedia_parser.get_tournaments(region_name, year=int(desired_year))
+  if ('Europe' in regions) and (year >= 2019):
+    tournament_names.append('LEC/' + str(year) + ' Season/Spring Season')
+    tournament_names.append('LEC/' + str(year) + ' Season/Summer Season')
+  elif ('Europe' in regions) and (year < 2019 and year >= 2013):
+    tournament_names.append('EU LCS/' + str(year) + ' Season/Spring Season')
+    tournament_names.append('EU LCS/' + str(year) + ' Season/Summer Season')
 
-# Loop through the list of tournament names
-for tournament_name in tournament_names:
-  # Get all games from the specified tournament
-  games = leaguepedia_parser.get_games(tournament_name)
+  if ('North America' in regions) and (year >= 2019):
+    tournament_names.append('LCS/' + str(year) + ' Season/Spring Season')
+    tournament_names.append('LCS/' + str(year) + ' Season/Summer Season')
+  elif ('North America' in regions) and (year < 2019 and year >= 2013):
+    tournament_names.append('NA LCS/' + str(year) + ' Season/Spring Season')
+    tournament_names.append('NA LCS/' + str(year) + ' Season/Summer Season')
 
-  # Loop through all the games from the specified list
-  for game in games:
-    # Get the details of the current game
-    current_game = leaguepedia_parser.get_game_details(game)
+# Get the regions from Leaguepedia
+regions_leaguepedia = leaguepedia_parser.get_regions()
 
-    # Save the picks and bans of the current game
-    picks_bans = current_game.picksBans
+# Loop through the list of years
+for year in years:
+  # Loop through the list of region names
+  for region in regions:
+    # Get tournaments from the 2021 season of the specified region
+    tournaments = leaguepedia_parser.get_tournaments(region, year=year)
 
-    # Save the teams playing in the current gamee
-    teams = current_game.teams
+  # Loop through the list of tournament names
+  for tournament_name in tournament_names:
+    # Get all games from the specified tournament
+    games = leaguepedia_parser.get_games(tournament_name)
 
-    # Set up pick/ban counters for each team
-    count_blue_ban = 0
-    count_red_ban = 0
-    count_blue_pick = 0
-    count_red_pick = 0
+    # Loop through all the games from the specified list
+    for game in games:
+      # Get the details of the current game
+      current_game = leaguepedia_parser.get_game_details(game)
 
-    # Loop through all picks and bans
-    for champion in picks_bans:
-      # Check if the champion was picked or banned
-      if champion.isBan:
-        # Check what team banned the champion
-        if champion.team == 'BLUE' and count_blue_ban < 5:
-          # Increment the counter
-          count_blue_ban += 1
+      # Save the picks and bans of the current game
+      picks_bans = current_game.picksBans
 
-          # Create a string to use as the dictionary index
-          result = 'Blue Ban ' + str(count_blue_ban)
-        elif count_red_ban < 5:
-          # Increment the counter
-          count_red_ban += 1
+      # Save the teams playing in the current gamee
+      teams = current_game.teams
 
-          # Create a string to use as the dictionary index
-          result = 'Red Ban ' + str(count_red_ban)
+      # Set up pick/ban counters for each team
+      count_blue_ban = 0
+      count_red_ban = 0
+      count_blue_pick = 0
+      count_red_pick = 0
 
-        # Store the draft data in the dictionary
-        draft_dict[result].append(
-          lit.get_name(champion.championId, object_type='champion')
-        )
-      else:
-        # Check what team picked the champion
-        if champion.team == 'BLUE' and count_blue_pick < 5:
-          # Increment the counter
-          count_blue_pick += 1
+      # Loop through all picks and bans
+      for champion in picks_bans:
+        # Check if the champion was picked or banned
+        if champion.isBan:
+          # Check what team banned the champion
+          if champion.team == 'BLUE' and count_blue_ban < 5:
+            # Increment the counter
+            count_blue_ban += 1
 
-          # Create a string to use as the dictionary index
-          result = 'Blue Pick ' + str(count_blue_pick)
-        elif count_red_pick < 5:
-          # Increment the counter
-          count_red_pick += 1
+            # Create a string to use as the dictionary index
+            result = 'Blue Ban ' + str(count_blue_ban)
+          elif count_red_ban < 5:
+            # Increment the counter
+            count_red_ban += 1
 
-          # Create a string to use as the dictionary index
-          result = 'Red Pick ' + str(count_red_pick)
+            # Create a string to use as the dictionary index
+            result = 'Red Ban ' + str(count_red_ban)
 
-        # Store the draft data in the dictionary
-        draft_dict[result].append(
-          lit.get_name(champion.championId, object_type='champion')
-        )
+          # Store the draft data in the dictionary
+          draft_dict[result].append(
+            lit.get_name(champion.championId, object_type='champion')
+          )
+        else:
+          # Check what team picked the champion
+          if champion.team == 'BLUE' and count_blue_pick < 5:
+            # Increment the counter
+            count_blue_pick += 1
+
+            # Create a string to use as the dictionary index
+            result = 'Blue Pick ' + str(count_blue_pick)
+          elif count_red_pick < 5:
+            # Increment the counter
+            count_red_pick += 1
+
+            # Create a string to use as the dictionary index
+            result = 'Red Pick ' + str(count_red_pick)
+
+          # Store the draft data in the dictionary
+          draft_dict[result].append(
+            lit.get_name(champion.championId, object_type='champion')
+          )
 
 # Create a DataFrame using the dictionary
 data = pd.DataFrame(draft_dict)
@@ -149,5 +165,24 @@ data = pd.DataFrame(draft_dict)
 # Shuffle the DataFrame
 data = data.sample(frac=1)
 
+# Create a string of the given regions to use in the filename
+regions_list = []
+if 'China' in regions:
+  regions_list.append('CN')
+if 'Europe' in regions:
+  regions_list.append('EU')
+if 'Korea' in regions:
+  regions_list.append('KR')
+if 'North America' in regions:
+  regions_list.append('NA')
+filename_regions = '-'.join(regions_list) + '_'
+
+# Create a string of the given years to use in the filename
+years_list = list(map(str, years))
+filename_years = '_'.join(years_list)
+
+# Create the filename by putting the substrings together
+filename = 'picks_bans_' + filename_regions + filename_years + '.csv'
+
 # Send the DataFrame to a csv file for reading
-data.to_csv('picks_bans_' + str(desired_year) + '.csv', index=False)
+data.to_csv(filename, index=False)
