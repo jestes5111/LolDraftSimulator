@@ -74,16 +74,16 @@ for year in years:
   if ('Europe' in regions) and (year >= 2019):
     tournament_names.append('LEC/' + str(year) + ' Season/Spring Season')
     tournament_names.append('LEC/' + str(year) + ' Season/Summer Season')
-  elif ('Europe' in regions) and (year < 2019 and year >= 2013):
-    tournament_names.append('EU LCS/' + str(year) + ' Season/Spring Season')
-    tournament_names.append('EU LCS/' + str(year) + ' Season/Summer Season')
+  elif ('Europe' in regions) and (2019 > year >= 2013):
+    tournament_names.append('EU_LCS/' + str(year) + ' Season/Spring Season')
+    tournament_names.append('EU_LCS/' + str(year) + ' Season/Summer Season')
 
   if ('North America' in regions) and (year >= 2019):
     tournament_names.append('LCS/' + str(year) + ' Season/Spring Season')
     tournament_names.append('LCS/' + str(year) + ' Season/Summer Season')
-  elif ('North America' in regions) and (year < 2019 and year >= 2013):
-    tournament_names.append('NA LCS/' + str(year) + ' Season/Spring Season')
-    tournament_names.append('NA LCS/' + str(year) + ' Season/Summer Season')
+  elif ('North America' in regions) and (2019 > year >= 2013):
+    tournament_names.append('NA_LCS/' + str(year) + ' Season/Spring Season')
+    tournament_names.append('NA_LCS/' + str(year) + ' Season/Summer Season')
 
 # Get the regions from Leaguepedia
 regions_leaguepedia = leaguepedia_parser.get_regions()
