@@ -33,7 +33,8 @@ from sklearn.model_selection import train_test_split
 def main() -> None:
   """Read the data to be used and simulate the draft."""
   # Read in the data and fill missing values
-  selection_data = pd.read_csv('picks_bans_2021.csv').fillna(method='ffill')
+  filename = 'data/picks_bans_LCK-LCS-LEC-LPL_2021.csv'
+  selection_data = pd.read_csv(filename).fillna(method='ffill')
 
   # Create a list to add selected champions to
   selected_champions = []

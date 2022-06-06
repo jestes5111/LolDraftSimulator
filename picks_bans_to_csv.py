@@ -17,6 +17,7 @@ __status__ = 'Prototype'
 #                                  Imports                                    #
 # --------------------------------------------------------------------------- #
 # Standard libraries
+import os
 import sys
 
 # Third-party libraries
@@ -29,6 +30,9 @@ import pandas as pd
 # --------------------------------------------------------------------------- #
 #                                    Code                                     #
 # --------------------------------------------------------------------------- #
+# Tell the user that the script is running
+print('Pick/ban data collection script starting.')
+
 # Initialize a dictionary to store data
 draft_dict = {
   'Blue Ban 1': [],
@@ -57,107 +61,105 @@ draft_dict = {
 regions = sys.argv[1].split(',')
 years = sys.argv[2].split(',')
 
-# Convert values to int
+# Convert year values to int
 years = list(map(int, years))
 
-# Create a list of tournament names and populate based on selections
+# Remove duplicates from and sort the list of years (safety check)
+years = list(set(years))
+years.sort()
+
+# Create lists of tournament names and region names
 tournament_names = []
+region_names = []
+
+# Populate the lists based on user input
 for year in years:
-  if 'China' in regions:
-    tournament_names.append('LPL/' + str(year) + ' Season/Spring Season')
-    tournament_names.append('LPL/' + str(year) + ' Season/Summer Season')
-
-  if 'Korea' in regions:
-    tournament_names.append('LCK/' + str(year) + ' Season/Spring Season')
-    tournament_names.append('LCK/' + str(year) + ' Season/Summer Season')
-
-  if ('Europe' in regions) and (year >= 2019):
-    tournament_names.append('LEC/' + str(year) + ' Season/Spring Season')
-    tournament_names.append('LEC/' + str(year) + ' Season/Summer Season')
-  elif ('Europe' in regions) and (2019 > year >= 2013):
-    tournament_names.append('EU_LCS/' + str(year) + ' Season/Spring Season')
-    tournament_names.append('EU_LCS/' + str(year) + ' Season/Summer Season')
-
-  if ('North America' in regions) and (year >= 2019):
-    tournament_names.append('LCS/' + str(year) + ' Season/Spring Season')
-    tournament_names.append('LCS/' + str(year) + ' Season/Summer Season')
-  elif ('North America' in regions) and (2019 > year >= 2013):
-    tournament_names.append('NA_LCS/' + str(year) + ' Season/Spring Season')
-    tournament_names.append('NA_LCS/' + str(year) + ' Season/Summer Season')
-
-# Get the regions from Leaguepedia
-regions_leaguepedia = leaguepedia_parser.get_regions()
-
-# Loop through the list of years
-for year in years:
-  # Loop through the list of region names
   for region in regions:
-    # Get tournaments from the 2021 season of the specified region
+    # Get the tournaments from the given region and year
     tournaments = leaguepedia_parser.get_tournaments(region, year=year)
 
-  # Loop through the list of tournament names
-  for tournament_name in tournament_names:
-    # Get all games from the specified tournament
-    games = leaguepedia_parser.get_games(tournament_name)
+    # Dynamically add the spring and summer seasons to the lists
+    for tournament in range(len(tournaments)):
+      if ('Spring Season' in tournaments[tournament].overviewPage or
+          'Summer Season' in tournaments[tournament].overviewPage):
+        tournament_names.append(tournaments[tournament].overviewPage)
+        region_names.append(tournaments[tournament].leagueShort)
 
-    # Loop through all the games from the specified list
-    for game in games:
-      # Get the details of the current game
-      current_game = leaguepedia_parser.get_game_details(game)
+# Remove duplicates from the list of region names
+region_names = list(set(region_names))
 
-      # Save the picks and bans of the current game
-      picks_bans = current_game.picksBans
+# Put the list in alphabetical order
+region_names.sort()
 
-      # Save the teams playing in the current gamee
-      teams = current_game.teams
+# Loop through the list of tournament names
+for tournament_name in tournament_names:
+  # Tell the user what tournament data is being collected for
+  print('\nCollecting data from ' + tournament_name + ', please wait.')
 
-      # Set up pick/ban counters for each team
-      count_blue_ban = 0
-      count_red_ban = 0
-      count_blue_pick = 0
-      count_red_pick = 0
+  # Get all games from the specified tournament
+  games = leaguepedia_parser.get_games(tournament_name)
 
-      # Loop through all picks and bans
-      for champion in picks_bans:
-        # Check if the champion was picked or banned
-        if champion.isBan:
-          # Check what team banned the champion
-          if champion.team == 'BLUE' and count_blue_ban < 5:
-            # Increment the counter
-            count_blue_ban += 1
+  # Loop through all the games from the specified list
+  for game in games:
+    # Get the details of the current game
+    current_game = leaguepedia_parser.get_game_details(game)
 
-            # Create a string to use as the dictionary index
-            result = 'Blue Ban ' + str(count_blue_ban)
-          elif count_red_ban < 5:
-            # Increment the counter
-            count_red_ban += 1
+    # Save the picks and bans of the current game
+    picks_bans = current_game.picksBans
 
-            # Create a string to use as the dictionary index
-            result = 'Red Ban ' + str(count_red_ban)
+    # Save the teams playing in the current gamee
+    teams = current_game.teams
 
-          # Store the draft data in the dictionary
-          draft_dict[result].append(
-            lit.get_name(champion.championId, object_type='champion')
-          )
-        else:
-          # Check what team picked the champion
-          if champion.team == 'BLUE' and count_blue_pick < 5:
-            # Increment the counter
-            count_blue_pick += 1
+    # Set up pick/ban counters for each team
+    count_blue_ban = 0
+    count_red_ban = 0
+    count_blue_pick = 0
+    count_red_pick = 0
 
-            # Create a string to use as the dictionary index
-            result = 'Blue Pick ' + str(count_blue_pick)
-          elif count_red_pick < 5:
-            # Increment the counter
-            count_red_pick += 1
+    # Loop through all picks and bans
+    for champion in picks_bans:
+      # Check if the champion was picked or banned
+      if champion.isBan:
+        # Check what team banned the champion
+        if champion.team == 'BLUE' and count_blue_ban < 5:
+          # Increment the counter
+          count_blue_ban += 1
 
-            # Create a string to use as the dictionary index
-            result = 'Red Pick ' + str(count_red_pick)
+          # Create a string to use as the dictionary index
+          result = 'Blue Ban ' + str(count_blue_ban)
+        elif count_red_ban < 5:
+          # Increment the counter
+          count_red_ban += 1
 
-          # Store the draft data in the dictionary
-          draft_dict[result].append(
-            lit.get_name(champion.championId, object_type='champion')
-          )
+          # Create a string to use as the dictionary index
+          result = 'Red Ban ' + str(count_red_ban)
+
+        # Store the draft data in the dictionary
+        draft_dict[result].append(
+          lit.get_name(champion.championId, object_type='champion')
+        )
+      else:
+        # Check what team picked the champion
+        if champion.team == 'BLUE' and count_blue_pick < 5:
+          # Increment the counter
+          count_blue_pick += 1
+
+          # Create a string to use as the dictionary index
+          result = 'Blue Pick ' + str(count_blue_pick)
+        elif count_red_pick < 5:
+          # Increment the counter
+          count_red_pick += 1
+
+          # Create a string to use as the dictionary index
+          result = 'Red Pick ' + str(count_red_pick)
+
+        # Store the draft data in the dictionary
+        draft_dict[result].append(
+          lit.get_name(champion.championId, object_type='champion')
+        )
+
+  # Tell the user that data collection for the current tournament is completed
+  print('Data from ' + tournament_name + ' collected!')
 
 # Create a DataFrame using the dictionary
 data = pd.DataFrame(draft_dict)
@@ -165,24 +167,41 @@ data = pd.DataFrame(draft_dict)
 # Shuffle the DataFrame
 data = data.sample(frac=1)
 
+# Create a folder to store the created files if it doesn't exist already
+if not os.path.isdir('data'):
+  os.mkdir('data')
+
+# Remove 'NA LCS' from the list, use 'LCS' readability
+if 'NA LCS' in region_names:
+  region_names.remove('NA LCS')
+
+  # Append 'LCS' in case it is not already in the list
+  region_names.append('LCS')
+
+# Same for 'EU LCS' and 'LEC'
+if 'EU LCS' in region_names:
+  region_names.remove('EU LCS')
+
+  # Append 'LEC' in case it is not already in the list
+  region_names.append('LEC')
+
+# Remove potential new duplicates from and sort the list of region names,
+# does nothing if nothing was added
+region_names = list(set(region_names))
+region_names.sort()
+
 # Create a string of the given regions to use in the filename
-regions_list = []
-if 'China' in regions:
-  regions_list.append('CN')
-if 'Europe' in regions:
-  regions_list.append('EU')
-if 'Korea' in regions:
-  regions_list.append('KR')
-if 'North America' in regions:
-  regions_list.append('NA')
-filename_regions = '-'.join(regions_list) + '_'
+filename_regions = '-'.join(region_names) + '_'
 
 # Create a string of the given years to use in the filename
 years_list = list(map(str, years))
-filename_years = '_'.join(years_list)
+filename_years = '-'.join(years_list)
 
 # Create the filename by putting the substrings together
-filename = 'picks_bans_' + filename_regions + filename_years + '.csv'
+filename = 'data/picks_bans_' + filename_regions + filename_years + '.csv'
 
 # Send the DataFrame to a csv file for reading
 data.to_csv(filename, index=False)
+
+# Inform the user that the script has finished
+print('\nPick/ban data collection script finished!')
