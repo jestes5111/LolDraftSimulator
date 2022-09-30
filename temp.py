@@ -17,8 +17,6 @@ __status__ = 'Prototype'
 #                                  Imports                                    #
 # --------------------------------------------------------------------------- #
 # Standard libraries
-import sys
-from pathlib import Path
 
 # Third-party libraries
 import pandas as pd
@@ -34,11 +32,9 @@ from sklearn.model_selection import train_test_split
 # --------------------------------------------------------------------------- #
 def main() -> None:
   """Read the data to be used and simulate the draft."""
-  # Get the dataset provided by the user
-  file = check_file()
-
   # Read in the data and fill missing values
-  selection_data = pd.read_csv(file).fillna(method='ffill')
+  filename = 'data/picks_bans_LCK-LCS-LEC-LPL_2021.csv'
+  selection_data = pd.read_csv(filename).fillna(method='ffill')
 
   # Create a list to add selected champions to
   selected_champions = []
@@ -47,7 +43,7 @@ def main() -> None:
   selection_counter = 0
 
   # Simulate the draft
-  print('\nBeginning draft simulation.')
+  print('Beginning draft simulation.')
   for draft_phase in selection_data.columns:
     select_champions(selection_data, draft_phase, selected_champions)
 
@@ -55,7 +51,7 @@ def main() -> None:
     if draft_phase in ['Blue Ban 1', 'Blue Pick 1', 'Red Ban 4', 'Red Pick 4']:
       print()
 
-    # Print the selection and start the next phase
+    # Print the selection and look at the next selection
     print('\t'+ draft_phase + ':\t', selected_champions[selection_counter])
     selection_counter += 1
 
@@ -78,7 +74,8 @@ def select_champions(
   target = data[phase]
 
   # Create a modified copy of the DataFrame that excludes the current phase
-  features = data.drop(phase, axis=1)
+  features = data.loc[:, :phase]
+  features = features.drop(phase, axis=1)
 
   # Use Encoders to make the data readable by the Neural Network
   features_encoder = OrdinalEncoder().fit(features)
@@ -91,9 +88,6 @@ def select_champions(
     features, target, test_size=0.2
   )
 
-  # Remove unused variable
-  del y_test
-
   # Create and train a StandardScaler
   scaler = StandardScaler()
   scaler.fit(X_train)
@@ -101,6 +95,9 @@ def select_champions(
   # Scale the data
   X_train = scaler.transform(X_train)
   X_test = scaler.transform(X_test)
+
+  # Remove unused variable
+  del y_test
 
   # Create and train a Neural Network classifier
   classifier = MLPClassifier(max_iter=2500)
@@ -118,20 +115,6 @@ def select_champions(
   # Choose a random champion and add them to the list of selected champions
   selection = np.random.choice(predictions, 1)
   selections.append(str(selection[0]))
-
-def check_file() -> str:
-  """Check the user's input until they provide an existing dataset."""
-  # Prompt the user for a dataset
-  while True:
-    print('Enter the CSV file you would like to use as a dataset: ')
-    filename = input()
-
-    # Make sure the user's file exists
-    filepath = Path('data/' + filename)
-    if not filepath.is_file():
-        print(str(filepath) + ' does not exist.\n')
-    else:
-        return str(filepath)
 
 if __name__ == '__main__':
   main()
